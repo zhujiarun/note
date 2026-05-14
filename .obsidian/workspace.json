@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "备忘录/GB28181.md",
+                "file": "密码本/密码.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "GB28181"
+              "title": "密码"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "备忘录/GB28181.md",
+                "file": "密码本/密码.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "GB28181 的反向链接列表"
+              "title": "密码 的反向链接列表"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "备忘录/GB28181.md",
+                "file": "密码本/密码.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "GB28181 的出链列表"
+              "title": "密码 的出链列表"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "备忘录/GB28181.md",
+                "file": "密码本/密码.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "GB28181 的大纲"
+              "title": "密码 的大纲"
             }
           },
           {
@@ -196,8 +196,10 @@
   },
   "active": "00a385240da043f0",
   "lastOpenFiles": [
-    "公司服务器列表.md",
     "备忘录/GB28181.md",
+    "密码本/密码.md",
+    "密码本",
+    "公司服务器列表.md",
     "备忘录",
     "README.md",
     "公司服务器列表/未命名.md",
