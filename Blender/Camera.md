@@ -1,0 +1,1 @@
+垂直 FOV = 2 × arctan( tan(水平 FOV / 2) ÷ 宽高比 )
