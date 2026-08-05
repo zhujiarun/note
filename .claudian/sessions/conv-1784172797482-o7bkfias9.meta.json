@@ -4,22 +4,21 @@
   "title": "限定讨论范围为C++11和C++17标准",
   "titleGenerationStatus": "success",
   "createdAt": 1784172797498,
-  "updatedAt": 1784173154987,
-  "lastResponseAt": 1784173154987,
+  "updatedAt": 1785913568037,
+  "lastResponseAt": 1785913568037,
   "sessionId": "1d33eeb5-37ae-4494-8e39-4389cbd835af",
   "selectedModel": "haiku",
   "providerState": {
     "providerSessionId": "1d33eeb5-37ae-4494-8e39-4389cbd835af"
   },
-  "currentNote": "C++/理解C++指针.md",
   "usage": {
     "model": "haiku",
-    "inputTokens": 2904,
+    "inputTokens": 235,
     "cacheCreationInputTokens": 0,
-    "cacheReadInputTokens": 42752,
+    "cacheReadInputTokens": 94336,
     "contextWindow": 200000,
     "contextWindowIsAuthoritative": true,
-    "contextTokens": 45656,
-    "percentage": 23
+    "contextTokens": 94571,
+    "percentage": 47
   }
 }

@@ -3,7 +3,7 @@
 ## 命令
 
 ```bash
-ssh-copy-id root@192.168.12.200
+ssh-copy-id root@192.168.12.20
 ```
 
 如果要指定端口：
