@@ -4,8 +4,8 @@
   "title": "限定讨论范围为C++11和C++17标准",
   "titleGenerationStatus": "success",
   "createdAt": 1784172797498,
-  "updatedAt": 1785913568037,
-  "lastResponseAt": 1785913568037,
+  "updatedAt": 1785923309343,
+  "lastResponseAt": 1785923309343,
   "sessionId": "1d33eeb5-37ae-4494-8e39-4389cbd835af",
   "selectedModel": "haiku",
   "providerState": {
@@ -13,12 +13,12 @@
   },
   "usage": {
     "model": "haiku",
-    "inputTokens": 235,
+    "inputTokens": 120,
     "cacheCreationInputTokens": 0,
-    "cacheReadInputTokens": 94336,
+    "cacheReadInputTokens": 96256,
     "contextWindow": 200000,
     "contextWindowIsAuthoritative": true,
-    "contextTokens": 94571,
-    "percentage": 47
+    "contextTokens": 96376,
+    "percentage": 48
   }
 }

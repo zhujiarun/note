@@ -218,6 +218,15 @@ docker load -i myimage.tar                  # 另一边加载
 ```
 
 ```bash
+# 真实示例：导出视频监控镜像 v1.1.0 为本地 tar 文件
+docker save -o cc_lm_device_video_surveillance.tar cc_lm_device_video_surveillance:v1.1.0
+```
+
+- `-o`（`--output`）：指定输出的 tar 文件路径，这里是 `cc_lm_device_video_surveillance.tar`。
+- 后面跟 `镜像名:标签`，这里是 `cc_lm_device_video_surveillance:v1.1.0`。
+- 导出的 tar 可以拷贝到别的机器，用 `docker load -i cc_lm_device_video_surveillance.tar` 导入。
+
+```bash
 docker export -o myfs.tar 容器名             # 导出容器文件系统
 docker import myfs.tar newname:tag          # 另一边导入
 ```
