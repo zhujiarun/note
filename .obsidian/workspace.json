@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "密码本/密码.md",
+                "file": "船舶/ship-motion-roll-pitch-heave.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "密码"
+              "title": "ship-motion-roll-pitch-heave"
             }
           }
         ]
@@ -207,8 +207,15 @@
       "realclaudian:Open Claudian": false
     }
   },
-  "active": "9faac9de5ca21db2",
+  "active": "d66cf649e1ca8bd5",
   "lastOpenFiles": [
+    "船舶/threejs-ship-data-mapping.md",
+    "船舶",
+    "船舶/ship-motion-roll-pitch-heave.md",
+    "Linux命令/tar打包命令.md",
+    "Linux命令/查字符串.md",
+    "密码本/密码.md",
+    "Linux命令/tar 打包命令.md",
     "Docker/Docker常用命令.md",
     "FFmpeg/理解FFmpeg编解码流程.md",
     "Linux命令/tcpdump-guide.md",
@@ -219,7 +226,6 @@
     "C++/理解C++栈和堆.md",
     "公司/公司服务器列表.md",
     "FFmpeg",
-    "密码本/密码.md",
     "AISkills/bencium-ui-design-skills.md",
     "Blender/Camera.md",
     "宇视UMS下级国标配置jpg.jpg",
@@ -232,12 +238,6 @@
     "C++/06-cpp变量分析.md",
     "C++/05-注释和cout详解.md",
     "C++/04-代码到程序生成过程.md",
-    "C++/02-理解第一个简单又重要的cpp程序.md",
-    "C++/01-第一章说明和真实开发环境的安装和使用.md",
-    "C++/08-变量的算术运算.md",
-    "C++/07-变量代码演示.md",
-    "Linux命令/copy-id.md",
-    "未命名.md",
     "Blender",
     "C++",
     "AISkills",
@@ -245,7 +245,6 @@
     "Linux命令",
     "NODE",
     "公司",
-    "ad96ee6a86b2c667846d073df13f7eef.jpg",
-    "宇视相关"
+    "ad96ee6a86b2c667846d073df13f7eef.jpg"
   ]
 }
