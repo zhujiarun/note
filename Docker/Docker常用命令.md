@@ -272,6 +272,8 @@ docker rmi nginx
 
 ```bash
 docker build -t cc_lm_device_video_surveillance:v1.0 .
+构建命令加上 `--platform`：指定目标平台，否则按构建平台为准
+docker build --platform linux/arm64 -t cc_lm_device_video_surveillance:v1.0 .
 ```
 
 - **作用**：从当前目录（`.`）的 `Dockerfile` 构建出镜像，命名为 `cc_lm_device_video_surveillance`，标签 `v1.0`。
@@ -392,21 +394,22 @@ docker rmi ────▶ 清理镜像（必须放最后）
 
 ## 八、速查表
 
-| 想干什么 | 命令 |
-|---------|------|
-| 构建镜像 | `docker build -t 名字:标签 .` |
-| 加载镜像文件 | `docker load -i xxx.tar` |
-| 列出镜像 | `docker images` |
-| 创建并启动容器 | `docker run -it/-d 镜像` |
-| 只创建不启动 | `docker create 镜像` |
-| 列出容器 | `docker ps` / `docker ps -a` |
-| 进入容器 | `docker exec -it 容器 bash` |
-| 停止 / 启动容器 | `docker stop 容器` / `docker start 容器` |
-| 删除容器 | `docker rm 容器` |
-| 删除镜像 | `docker rmi 镜像` |
-| 导出镜像 | `docker save -o out.tar 镜像` |
-| 导出容器文件系统 | `docker export -o out.tar 容器` |
-| 查看日志 | `docker logs 容器` |
+| 想干什么      | 命令                                       |
+| --------- | ---------------------------------------- |
+| 构建镜像      | `docker build -t 名字:标签 .`                |
+| 加载镜像文件    | `docker load -i xxx.tar`                 |
+| 列出镜像      | `docker images`                          |
+| 创建并启动容器   | `docker run -it/-d 镜像`                   |
+| 只创建不启动    | `docker create 镜像`                       |
+| 列出容器      | `docker ps` / `docker ps -a`             |
+| 进入容器      | `docker exec -it 容器 bash`                |
+| 停止 / 启动容器 | `docker stop 容器` / `docker start 容器`     |
+| 删除容器      | `docker rm 容器`                           |
+| 删除镜像      | `docker rmi 镜像`                          |
+| 导出镜像      | `docker save -o out.tar 镜像`              |
+| 导出容器文件系统  | `docker export -o out.tar 容器`            |
+| 查看日志      | `docker logs 容器`                         |
+| 指定构建平台    | `docker build --platform linux/arm64 -t` |
 
 ---
 
