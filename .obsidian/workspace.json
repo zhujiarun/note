@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "船舶/ship-motion-roll-pitch-heave.md",
+                "file": "密码本/密码.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ship-motion-roll-pitch-heave"
+              "title": "密码"
             }
           }
         ]
@@ -192,7 +192,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 585.5
+    "width": 448.68359375
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -207,44 +207,45 @@
       "realclaudian:Open Claudian": false
     }
   },
-  "active": "d66cf649e1ca8bd5",
+  "active": "4419caa85e371b3f",
   "lastOpenFiles": [
-    "船舶/threejs-ship-data-mapping.md",
-    "船舶",
-    "船舶/ship-motion-roll-pitch-heave.md",
-    "Linux命令/tar打包命令.md",
-    "Linux命令/查字符串.md",
-    "密码本/密码.md",
-    "Linux命令/tar 打包命令.md",
-    "Docker/Docker常用命令.md",
-    "FFmpeg/理解FFmpeg编解码流程.md",
-    "Linux命令/tcpdump-guide.md",
-    "Docker",
-    "C++/理解C++指针.md",
-    "FFmpeg/帧概念总结.md",
-    "C++/理解C++移动语义.md",
-    "C++/理解C++栈和堆.md",
-    "公司/公司服务器列表.md",
-    "FFmpeg",
-    "AISkills/bencium-ui-design-skills.md",
-    "Blender/Camera.md",
-    "宇视UMS下级国标配置jpg.jpg",
-    "NODE/nodejs程序退出重启.md",
-    "NODE/npm 发包流程(基于verdaccio).md",
     "Linux命令/ssh-copy-id.md",
-    "C++/03-Cpp程序生成过程中每种文件的作用.md",
-    "C++/09-cpp浮点数计算和转化.md",
-    "C++/10-cpp运行时和编译时常量.md",
-    "C++/06-cpp变量分析.md",
-    "C++/05-注释和cout详解.md",
-    "C++/04-代码到程序生成过程.md",
-    "Blender",
-    "C++",
-    "AISkills",
-    "MACOS",
-    "Linux命令",
-    "NODE",
-    "公司",
+    "NODE/npm 发包流程(基于verdaccio).md",
+    "前端/HTTPS 本地开发指南.md",
+    "前端/前端高级技术清单.md",
+    "前端/WebCodecs/webcodecs-AI-官网翻译.md",
+    "前端/WebCodecs/WebCodecs-API详解.md",
+    "前端/WebCodecs/webcodecs-webgpu-interop.md",
+    "前端/WebCodecs/webcodecs-summary.md",
+    "前端/WebCodecs",
+    "Opencv/OpenCV 4.12.0 安装与多版本切换指南.md",
+    "NODE/nodejs相关.md",
+    "NODE/nodejs程序退出重启.md",
+    "MACOS/前端项目.md",
+    "Blender/Camera.md",
+    "JSTest/nodejs.md",
+    "船舶/参考.md",
+    "方案",
+    "Linux命令/查字符串.md",
+    "参考.md",
+    "FFmpeg/理解FFmpeg编解码流程.md",
+    "FFmpeg/帧概念总结.md",
+    "CANN-AscendC-算子开发文档清单.md",
+    "YOLO/YOLO11训练指南.md",
+    "前端/Webgl/WEBGL2_NOTES.md",
+    "密码本/密码.md",
+    "前端/WebGL详解.md",
+    "前端/Webgl/WebGL详解.md",
+    "前端/Webgpu/WebGPU详解.md",
+    "前端/Webgpu",
+    "前端/Webgl",
+    "前端/webgpu",
+    "前端/bgpu",
+    "前端/未命名文件夹",
+    "前端/webgl",
+    "YOLO",
+    "未命名文件夹",
+    "宇视UMS下级国标配置jpg.jpg",
     "ad96ee6a86b2c667846d073df13f7eef.jpg"
   ]
 }
