@@ -15,7 +15,25 @@ FFmpeg 是一个纯 C 库。它没有类、没有析构函数，所有的对象�
 
 ---
 
-## 一、整体架构：两条路线
+## 一、核心方法论：流程驱动，而不是 API 驱动
+
+FFmpeg 是**流程驱动**的库，不需要背几百个函数。记住流程的每个"阶段"，每阶段需要什么对象，再按名字去查：
+
+```
+阶段                    需要什么对象/函数
+─────────────────────────────────────────────────
+打开输入         →  AVFormatContext + avformat_open_input
+找流信息         →  avformat_find_stream_info + AVStream
+初始化解码器     →  AVCodecContext + avcodec_open2
+读包             →  AVPacket + av_read_frame
+解码             →  avcodec_send_packet / avcodec_receive_frame
+转换像素         →  SwsContext + sws_scale
+编码/写文件      →  avcodec_send_frame / av_interleaved_write_frame
+```
+
+写代码时：**"流程走到哪一步了，这一步缺哪个函数"**——有了流程，查 API 是一下的事；没有流程，API 就是大海捞针。
+
+## 二、整体架构：两条路线
 
 RTSP 本身只是个**传输协议**（说"我要看哪个流、用 TCP 还是 UDP 传"），真正承载视频数据的是 RTP 包。FFmpeg 的 RTSP 解复用器把这些全封装好了，你不需要直接碰 RTP——你只会看到两个抽象：
 
@@ -40,7 +58,7 @@ RTSP 本身只是个**传输协议**（说"我要看哪个流、用 TCP 还是 U
 
 ---
 
-## 二、上下文对象与内存管理
+## 三、上下文对象与内存管理
 
 ### 为什么看到 `AVFormatContext *ic; ic = avformat_alloc_context();`
 
@@ -138,7 +156,7 @@ using PacketPtr   = std::unique_ptr<AVPacket, PacketDeleter>;
 
 ---
 
-## 三、解码侧：RTSP 拉流 → 原始帧
+## 四、解码侧：RTSP 拉流 → 原始帧
 
 ### 核心调用时序
 
@@ -310,7 +328,7 @@ av_freep(&dst_data[0]);
 
 ---
 
-## 四、编码侧：原始帧 → 压缩流 → 推送
+## 五、编码侧：原始帧 → 压缩流 → 推送
 
 方向反过来，核心思想完全对称：
 
@@ -359,7 +377,7 @@ if (enc_ctx->codec_id == AV_CODEC_ID_H264)
 
 ---
 
-## 五、RTSP 特有注意点
+## 六、RTSP 特有注意点
 
 1. **网络阻塞**：`avformat_open_input` 是唯一明显阻塞的调用，连接不上会卡住——必须设 `timeout`。拉流后 `av_read_frame` 在网络断开时返回错误码，需要做**重连**（关掉重开）。
 2. **TCP vs UDP**：
@@ -372,7 +390,7 @@ if (enc_ctx->codec_id == AV_CODEC_ID_H264)
 
 ---
 
-## 六、音视频同步
+## 七、音视频同步
 
 ### 为什么需要同步
 
@@ -436,7 +454,7 @@ int64_t audio_clock_us() {
 
 ---
 
-## 七、C++17 在这里扮演的角色
+## 八、C++17 在这里扮演的角色
 
 FFmpeg API 是 C 的，但工程化它正是 C++17 的主场：
 
@@ -449,6 +467,189 @@ FFmpeg API 是 C 的，但工程化它正是 C++17 的主场：
 | 参数传递 | 裸指针 | `const std::string&`、`std::string_view` |
 
 最核心的一点：**FFmpeg 对象几乎全是指针，且释放规则各不相同**——这正好是 RAII 智能指针的实战，每种 deleter 对应一种"清理规则"，编译器保证它们在所有路径上被执行。
+
+---
+
+## 九、实战解读：一份真实 RTSP 解码工程逐段分析
+
+> 本节对照 [`ffmpeg/ffmpeg_decode.cpp`](../../../c++/study/ffmpeg/ffmpeg_decode.cpp) 这份真实代码，逐段拆解它"为什么这么写"，覆盖前面章节里没有展开的具体工程点。
+
+### 一、整体流程拆解
+
+代码分成两个函数，对应 FFmpeg 的两层职责：
+
+```
+ffmpeg_video_decode()  →  解封装层：打开 RTSP / 探测 / 选流
+ffmpeg_decode()        →  解码层：找解码器 / 解码 / 色彩转换
+```
+
+这是 FFmpeg 官方示例（`doc/examples/demuxing_decoding.c`）的标准分层：解封装与解码解耦，便于替换输入源或单独替换解码实现。
+
+---
+
+### 二、解封装阶段（ffmpeg_video_decode）
+
+#### 1. 中断回调：解决 RTSP 阻塞问题
+
+```cpp
+static volatile int DISTURBE_SIGNALS = 0;
+static int decode_interrupt_cb(void *ctx) { return DISTURBE_SIGNALS > 0; }
+ic->interrupt_callback = int_cb;
+```
+
+**为什么需要？** RTSP 是阻塞协议，`av_read_frame` 在网络卡顿时会无限等待。FFmpeg 提供这个钩子，在每次阻塞操作时回调一次：返回非 0 就立刻中断当前调用、返回错误。这是**关闭 RTSP 流时主线程能及时退出的唯一机制**。
+
+`volatile` 保证多线程下 `DISTURBE_SIGNALS` 标志位变化能被立即看到。
+
+#### 2. `av_dict_set` 设置 RTSP 私有选项
+
+```cpp
+av_dict_set(&fmt_opts, "fflags", "nobuffer", 0);     // 无缓存
+av_dict_set(&fmt_opts, "rtsp_transport", "tcp", 0);  // 走 TCP
+av_dict_set(&fmt_opts, "stimeout", "1000000", 0);     // socket 超时 1 秒
+```
+
+| 选项 | 作用 |
+|------|------|
+| `fflags=nobuffer` | 关闭内部缓冲，加快首帧 |
+| `rtsp_transport=tcp` | TCP 可靠、穿透性好；UDP 延迟低但会丢包花屏 |
+| `stimeout` | 底层 socket 超时（微秒），避免永久阻塞 |
+
+#### 3. 降低延迟的两行（实时流特有的"反探测"）
+
+```cpp
+ic->probesize = 100 * 1024;
+ic->max_analyze_duration = 5*AV_TIME_BASE;
+```
+
+FFmpeg 默认会读很多包来分析流（猜 codec、算时长、测帧率）——这是**离线文件**的策略，对实时 RTSP 既无必要又增加启动延迟。代码把探测数据量压到 100KB、时长压到 5 秒，能显著加快首帧出来。
+
+#### 4. 多码流场景下的选流
+
+```cpp
+for (unsigned int i = 0; i < ic->nb_streams; i++) {
+    AVStream *st = ic->streams[i];
+    if (st->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+        // 跳过封面图（AV_DISPOSITION_ATTACHED_PIC）和占位流
+        if ((st->disposition & AV_DISPOSITION_ATTACHED_PIC) && ...) { ... }
+        else {
+            int resolution = st->codecpar->width * st->codecpar->height;
+            if (resolution > max_video_resolution && st->codecpar->codec_id != AV_CODEC_ID_NONE) {
+                video_stream_id = i;
+            }
+        }
+    }
+}
+```
+
+RTSP 流里常常包含**多路视频**（主码流 + 子码流 + 一张封面图）。代码：
+- 跳过封面图（一般是 JPEG，不要当视频解）
+- 跳过 `AV_CODEC_ID_NONE`（占位流）
+- 取**分辨率最大**的一路（一般是主码流，画质最好）
+
+---
+
+### 三、解码阶段（ffmpeg_decode）
+
+#### 5. 软/硬解码分支
+
+```cpp
+if (use_hw_decode) {
+    codec = avcodec_find_decoder_by_name("h264_cuvid");  // NVIDIA NVDEC
+} else {
+    codec = avcodec_find_decoder(codecpar->codec_id);    // 纯软解
+}
+```
+
+- `avcodec_find_decoder_by_name`：按名字找特定实现（如 `h264_cuvid` / `hevc_cuvid` 是 NVIDIA 硬解）。
+- `avcodec_find_decoder`：按 codec_id 自动找一个能解的（软解优先，回退到系统硬解）。
+
+#### 6. 手动拷贝 codecpar → codec_ctx（FFmpeg 4.x 后的强制步骤）
+
+```cpp
+codec_ctx->pix_fmt = AVPixelFormat(codecpar->format);
+codec_ctx->height  = codecpar->height;
+codec_ctx->width   = codecpar->width;
+```
+
+**FFmpeg 4.x 起不再自动从 `codecpar` 拷贝**，必须手动赋值关键字段（宽高、像素格式等），否则解码器会拿到错误参数。
+
+#### 7. 软解多线程参数
+
+```cpp
+codec_ctx->thread_count = 8;                       // 多帧并行
+codec_ctx->thread_type  = FF_THREAD_FRAME;         // 按帧分线程
+codec_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;       // 关闭部分缓冲
+```
+
+`FF_THREAD_FRAME` 是"多帧并行"模式，适合软解 H.264/H.265 提速；`FF_THREAD_SLICE` 是按片并行。`LOW_DELAY` 关闭参考帧重排序缓冲，降低延迟。
+
+#### 8. 准备 BGR 输出缓冲（libswscale 上下文）
+
+```cpp
+int buffer_size = av_image_get_buffer_size(AV_PIX_FMT_BGR24, w, h, 1);
+buffer = (unsigned char*)av_malloc(buffer_size);
+av_image_fill_arrays(frame_bgr->data, frame_bgr->linesize, buffer, ...);
+
+sws_ctx = sws_getContext(w, h, codec_ctx->pix_fmt,
+                         w, h, AV_PIX_FMT_BGR24,
+                         SWS_FAST_BILINEAR, NULL, NULL, NULL);
+```
+
+**为什么需要这一步？** 解码器输出的是 YUV420/NV12 等压缩友好格式，而下游（OpenCV、显示、推理）几乎都要 BGR24。所以：
+- `av_image_get_buffer_size`：算目标格式一帧需要多少字节。
+- `av_image_fill_arrays`：把一块连续内存"挂"到 `AVFrame` 的 `data/linesize` 上，避免每帧再分配。
+- `sws_getContext`：`libswscale` 的转换器，YUV → BGR。`SWS_FAST_BILINEAR` 是速度优先的双线性插值。
+
+> 关键：`frame_bgr->data` 直接指向你 `av_malloc` 出来的 `buffer`，所以这块 buffer **必须活到最后一帧用完之后才能 `av_free`**。
+
+#### 9. send/receive 解码主循环
+
+```cpp
+while (av_read_frame(ic, &pkt) >= 0) {
+    // 过滤：非目标流 / 非关键帧 / 空包
+    if (pkt.stream_index != stream_id ||
+        (only_key_frame && !(pkt.flags & AV_PKT_FLAG_KEY)) ||
+        pkt.size < 1) {
+        goto discard_packet;
+    }
+
+    avcodec_send_packet(codec_ctx, &pkt);
+    err = avcodec_receive_frame(codec_ctx, frame);
+    if (err == AVERROR(EAGAIN)) goto discard_packet;   // 正常：还需要更多 packet
+    if (err == AVERROR_EOF)   { break; }              // 流结束
+    else if (err < 0) goto discard_packet;            // 真错误
+
+    // YUV → BGR
+    sws_scale(sws_ctx, frame->data, frame->linesize,
+              0, frame->height,
+              frame_bgr->data, frame_bgr->linesize);
+
+discard_packet:
+    av_frame_unref(frame);
+    av_packet_unref(&pkt);
+}
+```
+
+**send/receive 解耦 API 状态机**（4.x 引入，替代旧的 `avcodec_decode_video2`）：
+
+| 调用 | 返回值 | 含义 | 处理 |
+|------|--------|------|------|
+| `send_packet` | `AVERROR(EAGAIN)` | 解码器内部缓冲满了 | 先 `receive_frame` 抽几帧再送 |
+| `send_packet` | `AVERROR_EOF` | 解码器已 flush | 结束 |
+| `receive_frame` | `AVERROR(EAGAIN)` | 还没攒够一帧 | 正常，继续送 packet |
+| `receive_frame` | `AVERROR_EOF` | 流结束 | 退出 |
+| `receive_frame` | 0 | 成功取出一帧 | 处理 |
+
+**`goto discard_packet` 的工程价值**：把所有需要释放资源的地方（成功路径、各种错误路径）统一收口到一处，避免每个 `if` 分支都重复 `av_packet_unref`。**这两步 unref 是必须的**，不调用就会内存泄漏（packet）和解码器内部缓冲爆炸。
+
+---
+
+### 四、这份代码值得注意的几个问题
+
+1. **末尾 `return` 缺失**：`ffmpeg_video_decode` 成功路径最后只调用 `ffmpeg_decode(...)` 而没有 `return`，函数声明却是 `int`，调用方会拿到未定义值。改成 `return ffmpeg_decode(...)`。
+2. **`frame_bgr` 和 `buffer` 没释放**：函数退出前没 `av_frame_free` / `av_free`，且 `ffmpeg_decode` 是无限循环（`av_read_frame` 阻塞退出时才出 while），结束后会泄漏。
+3. **`SWS_FAST_BILINEAR` 的取舍**：实时解码选这个没问题；如果之后要喂给检测模型做高精度推理，建议改 `SWS_BILINEAR` 或 `SWS_LANCZOS`。
 
 ---
 
@@ -485,25 +686,7 @@ libswscale/swscale.h    像素转换  SwsContext、sws_scale
 
 直接搜结构体的速记 URL：`https://ffmpeg.org/doxygen/trunk/structAVFormatContext.html`
 
-### 二、核心方法论：流程驱动，而不是 API 驱动
-
-FFmpeg 是**流程驱动**的库，不需要背几百个函数。记住流程的每个"阶段"，每阶段需要什么对象，再按名字去查：
-
-```
-阶段                    需要什么对象/函数
-─────────────────────────────────────────────────
-打开输入         →  AVFormatContext + avformat_open_input
-找流信息         →  avformat_find_stream_info + AVStream
-初始化解码器     →  AVCodecContext + avcodec_open2
-读包             →  AVPacket + av_read_frame
-解码             →  avcodec_send_packet / avcodec_receive_frame
-转换像素         →  SwsContext + sws_scale
-编码/写文件      →  avcodec_send_frame / av_interleaved_write_frame
-```
-
-写代码时：**"流程走到哪一步了，这一步缺哪个函数"**——有了流程，查 API 是一下的事；没有流程，API 就是大海捞针。
-
-### 三、操作技巧
+### 二、操作技巧
 
 1. **按名字猜 + 验证**：函数名高度规律。想释放格式上下文？猜 `avformat_` + `free`/`close` → `avformat_close_input`，再用 IDE 补全确认。
 2. **`grep` 头文件**：不确定函数在哪个库：
@@ -513,7 +696,7 @@ FFmpeg 是**流程驱动**的库，不需要背几百个函数。记住流程的
 3. **警惕版本敏感的旧 API**：网上老教程（如雷霄骅博客，FFmpeg 2.x 时代）的 `avcodec_decode_video2` 已废弃，被 `send_packet/receive_frame` 取代。**API 对不上时，以头文件和官方 examples 为准。**
 4. **看结构体字段理解"它是什么"**：打开 `AVFormatContext` 的 doxygen 页面扫一眼字段，对"总管家装了什么"的理解立刻具体化。
 
-### 四、实操路径
+### 三、实操路径
 
 ```
 ① brew install ffmpeg                       ← 装库（含头文件）
