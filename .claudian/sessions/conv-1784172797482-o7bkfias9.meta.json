@@ -4,21 +4,21 @@
   "title": "限定讨论范围为C++11和C++17标准",
   "titleGenerationStatus": "success",
   "createdAt": 1784172797498,
-  "updatedAt": 1788831250970,
-  "lastResponseAt": 1788831250970,
+  "updatedAt": 1789373454640,
+  "lastResponseAt": 1789373454640,
   "sessionId": "1d33eeb5-37ae-4494-8e39-4389cbd835af",
-  "selectedModel": "haiku",
+  "selectedModel": "claude-fable-5",
   "providerState": {
     "providerSessionId": "1d33eeb5-37ae-4494-8e39-4389cbd835af"
   },
   "usage": {
-    "model": "haiku",
-    "inputTokens": 81312,
+    "model": "claude-fable-5",
+    "inputTokens": 54889,
     "cacheCreationInputTokens": 0,
-    "cacheReadInputTokens": 0,
+    "cacheReadInputTokens": 71680,
     "contextWindow": 200000,
     "contextWindowIsAuthoritative": true,
-    "contextTokens": 81312,
-    "percentage": 41
+    "contextTokens": 126569,
+    "percentage": 63
   }
 }

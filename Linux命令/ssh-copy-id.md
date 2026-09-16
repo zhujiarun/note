@@ -3,6 +3,7 @@
 ## 命令
 
 ```bash
+ssh-keygen -t rsa -b 4096 (本机执行，三次回车，按照默认就行)
 ssh-copy-id root@192.168.12.20
 ```
 
