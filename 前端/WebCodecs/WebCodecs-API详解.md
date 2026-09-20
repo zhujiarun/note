@@ -41,13 +41,13 @@ WebCodecs 是 W3C 编解码工作组制定的浏览器底层 API，目标是**�
 
 围绕它们构建四类**编解码器**：
 
-| 编解码器 | 作用 |
-|---------|------|
+| 编解码器           | 作用                               |
+| -------------- | -------------------------------- |
 | `VideoDecoder` | H.264/H.265/VP9/AV1 → VideoFrame |
 | `VideoEncoder` | VideoFrame → H.264/H.265/VP9/AV1 |
-| `AudioDecoder` | AAC/Opus/MP3 → AudioData |
-| `AudioEncoder` | AudioData → AAC/Opus |
-| `ImageDecoder` | 图片 → VideoFrame（静态图片的批量解码） |
+| `AudioDecoder` | AAC/Opus/MP3 → AudioData         |
+| `AudioEncoder` | AudioData → AAC/Opus             |
+| `ImageDecoder` | 图片 → VideoFrame（静态图片的批量解码）       |
 
 ### 1.2 数据流模型
 
@@ -442,17 +442,17 @@ decoder.configure({
 
 **`codec` 字符串格式：**
 
-| 格式 | 字符串示例 | 说明 |
-|------|-----------|------|
-| H.264 Baseline 3.1 | `avc1.42001f` | `avc1.{profile}{level}` |
-| H.264 Main 4.0 | `avc1.4d4028` | |
-| H.264 High 4.2 | `avc1.640028` | |
-| H.265 Main | `hev1.1.6.L93.B0` | 较复杂 |
-| H.265 Main 10 | `hev1.2.4.L93.B0` | 10-bit |
-| VP9 | `vp09.00.10.08` | profile.level.bit-depth |
-| VP9 Profile 2 HDR | `vp09.02.51.10` | |
-| AV1 Main | `av01.0.04M.08` | |
-| AV1 High | `av01.1.04M.08` | |
+| 格式                 | 字符串示例             | 说明                      |
+| ------------------ | ----------------- | ----------------------- |
+| H.264 Baseline 3.1 | `avc1.42001f`     | `avc1.{profile}{level}` |
+| H.264 Main 4.0     | `avc1.4d4028`     |                         |
+| H.264 High 4.2     | `avc1.640028`     |                         |
+| H.265 Main         | `hev1.1.6.L93.B0` | 较复杂                     |
+| H.265 Main 10      | `hev1.2.4.L93.B0` | 10-bit                  |
+| VP9                | `vp09.00.10.08`   | profile.level.bit-depth |
+| VP9 Profile 2 HDR  | `vp09.02.51.10`   |                         |
+| AV1 Main           | `av01.0.04M.08`   |                         |
+| AV1 High           | `av01.1.04M.08`   |                         |
 
 **`description`（SPS/PPS/VPS）：**
 
