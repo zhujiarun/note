@@ -113,14 +113,14 @@ docker run ubuntu:22.04 echo "hello"
 
 常用参数（记这几个就够起步）：
 
-| 参数 | 作用 | 示例 |
-|------|------|------|
-| `-it` | 交互式终端（前台运行 + 可输入） | `docker run -it ubuntu:22.04 bash` |
-| `-d` | 后台运行（守护模式） | `docker run -d nginx` |
-| `--name` | 给容器起名字（否则是随机名） | `docker run --name myweb nginx` |
-| `-p` | 端口映射：`宿主机端口:容器端口` | `docker run -p 8080:80 nginx` |
-| `-v` | 挂载数据卷：`宿主机目录:容器目录` | `docker run -v /data:/data ubuntu` |
-| `--rm` | 容器退出后自动删除（适合临时容器） | `docker run --rm ubuntu echo hi` |
+| 参数       | 作用                 | 示例                                 |
+| -------- | ------------------ | ---------------------------------- |
+| `-it`    | 交互式终端（前台运行 + 可输入）  | `docker run -it ubuntu:22.04 bash` |
+| `-d`     | 后台运行（守护模式）         | `docker run -d nginx`              |
+| `--name` | 给容器起名字（否则是随机名）     | `docker run --name myweb nginx`    |
+| `-p`     | 端口映射：`宿主机端口:容器端口`  | `docker run -p 8080:80 nginx`      |
+| `-v`     | 挂载数据卷：`宿主机目录:容器目录` | `docker run -v /data:/data ubuntu` |
+| `--rm`   | 容器退出后自动删除（适合临时容器）  | `docker run --rm ubuntu echo hi`   |
 
 **前台 vs 后台**：
 
